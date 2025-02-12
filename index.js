@@ -1,13 +1,19 @@
 const PORT = 8000;
-const express = require("express");
+import express from "express";
 const app = express();
 
-app.set("view engine", "ejs");
-app.set("views", __dirname + "/views/pages");
-app.use(express.static(__dirname + "/public"));
+import { consultaOpenAI } from "./config/openaiConsult.js";
+
+app.use(express.json());
+app.use(express.static(import.meta.dirname + "/public"));
 
 app.get("/", (req, res) => {
-  res.render("index");
+  res.send("ok");
+});
+
+app.post("/ia", async (req, res) => {
+  let responseia = await consultaOpenAI(req.body.userConsult);
+  res.json({ responseia });
 });
 
 app.listen(PORT, () => {

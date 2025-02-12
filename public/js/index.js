@@ -2,9 +2,13 @@ const crearMessageUsuario = (userMessage) => {
   let container = document.getElementById("messages-container");
   let messageElement = document.createElement("div");
   messageElement.innerHTML =
-    "<span> You: </span>" + "<span>" + userMessage + "</span>";
+    "<span style='font-weight:bold; color:green;'> You: </span>" +
+    "<span>" +
+    userMessage +
+    "</span>";
   container.append(messageElement);
-  chatBotResponse(userMessage);
+  responseManager(userMessage);
+  container.scrollTop = container.scrollHeight;
 };
 
 document.getElementById("myForm").addEventListener("submit", () => {
@@ -17,22 +21,32 @@ document.getElementById("myForm").addEventListener("submit", () => {
   textBox.value = "";
 });
 
-const chatBotResponse = (userMessage) => {
+const chatBotResponse = (response) => {
   let container = document.getElementById("messages-container");
   let messageElement = document.createElement("div");
   messageElement.style.textAlign = "right";
   messageElement.innerHTML =
-    "<span style=color:blue> Bot: </span>" + "<span>" + "😊" + "</span>";
+    "<span style='font-weight:bold; color:blue;'> Bot: </span>" +
+    "<span>" +
+    response +
+    "</span>";
   container.append(messageElement);
 };
 
-const initialMessage = (text) => {
-  let container = document.getElementById("messages-container");
-  let messageElement = document.createElement("div");
-  messageElement.style.textAlign = "right";
-  messageElement.innerHTML =
-    "<span style=color:blue> Bot: </span>" + "<span>" + text + "</span>";
-  container.append(messageElement);
-};
+const urlForIA = "http://localhost:8000/ia";
 
-initialMessage("Hola,soy un chat, por ahora no hago mucho, probame");
+const responseManager = (userConsult) => {
+  fetch(urlForIA, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      userConsult,
+    }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      chatBotResponse(data.responseia);
+    });
+};
